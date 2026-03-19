@@ -85,7 +85,7 @@
         <!-- campo mensaje — vulnerable a XSS -->
         <div class="form-group">
           <label>Mensaje:</label>
-          <!-- 🚨 el contenido de este campo se renderiza sin escapar -->
+          <!-- el contenido de este campo se renderiza sin escapar -->
           <textarea name="mensaje" class="form-control" rows="3"></textarea>
           <p>Total caracteres: <span id="contador">0</span></p>
         </div>
@@ -100,7 +100,7 @@
         <h5>Mensaje recibido:</h5>
         <p><strong>Nombre:</strong> {{ nombre }}</p>
 
-        <!-- 🚨 VULNERABLE XSS: |safe desactiva el escape de Jinja2 -->
+        <!-- VULNERABLE XSS: |safe desactiva el escape de Jinja2 -->
         <!-- payload: <script>alert('XSS')</script> -->
         <p><strong>Mensaje:</strong> {{ mensaje|safe }}</p>
       </div>
