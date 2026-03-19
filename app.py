@@ -93,7 +93,7 @@ def contacto():
         motivo = request.form.get("motivo")
         mensaje = request.form.get("mensaje")
 
-        # 🚨 VULNERABILIDAD XSS:
+        # VULNERABILIDAD XSS:
         # el mensaje se envía directamente al template
         # y en el HTML se usa |safe → ejecuta JS
         return render_template(
@@ -129,7 +129,7 @@ def buscar():
             db = get_db()
             cursor = db.cursor()
 
-            # 🚨 VULNERABILIDAD SQLi:
+            # VULNERABILIDAD SQLi:
             # concatenación directa del input del usuario
             query = f"SELECT id, username FROM users WHERE username = '{query_param}'"
 
@@ -146,7 +146,7 @@ def buscar():
             db.close()
 
         except Exception as e:
-            # 🚨 muestra errores SQL (information disclosure)
+            # muestra errores SQL (information disclosure)
             error = str(e)
 
     return render_template(
@@ -175,7 +175,7 @@ def login():
     db = get_db()
     cursor = db.cursor()
 
-    # 🚨 VULNERABILIDAD SQLi:
+    # VULNERABILIDAD SQLi:
     # permite bypass con ' OR '1'='1' --
     query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
 
