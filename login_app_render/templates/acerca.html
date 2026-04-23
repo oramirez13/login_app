@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>login_app</title>
+
+    <!-- Bootstrap/css -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+
+    <!-- css/style.css -->
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <!-- navbar principal -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <!-- marca/logo texto -->
+        <a class="navbar-brand" href="/">ORAMI</a>
+
+        <!-- botón hamburguesa para móviles -->
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#menuPrincipal"
+          aria-controls="menuPrincipal"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- links de navegación -->
+        <div class="collapse navbar-collapse" id="menuPrincipal">
+          <div class="navbar-nav mr-auto">
+            <a class="nav-item nav-link" href="/">Inicio</a>
+            <a class="nav-item nav-link" href="/blog">Blog</a>
+            <a class="nav-item nav-link active" href="/acerca">Acerca de</a>
+            <a class="nav-item nav-link" href="/contacto">Contacto</a>
+            <a class="nav-item nav-link" href="/buscar">Buscar</a>
+          </div>
+
+          <!-- logo imagen -->
+          <img
+            src="/static/img/infosec_orami_.png"
+            alt="Logo"
+            style="height: 40px"
+            class="d-none d-lg-block mr-3"
+          />
+
+          <!-- botón logout -->
+          <a href="/logout" class="btn btn-outline-danger btn-sm">Logout</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- contenedor principal -->
+    <div class="container mt-5">
+      <!-- encabezado de la página -->
+      <h1 class="text-center">Acerca de</h1>
+      <p class="text-center">Laboratorio de prácticas de ciberseguridad</p>
+
+      <!-- fila de tarjetas -->
+      <div class="row mt-4">
+        <!-- tarjeta 1: descripción del laboratorio -->
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 bg-dark border-secondary">
+            <div class="card-body">
+              <!-- título de la tarjeta -->
+              <h5 class="card-title text-info">El Laboratorio</h5>
+
+              <!-- descripción -->
+              <p class="card-text text-light">
+                Este laboratorio ha sido diseñado para poner a prueba tus
+                habilidades en ciberseguridad ofensiva, específicamente en el
+                área de aplicaciones web.
+              </p>
+            </div>
+            <!-- footer con categoría -->
+            <div class="card-footer border-secondary">
+              <small class="text-muted">InfoSec ORAMI — Web Security Lab</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- tarjeta 2: objetivo del CTF -->
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 bg-dark border-secondary">
+            <div class="card-body">
+              <!-- título de la tarjeta -->
+              <h5 class="card-title text-success">Objetivo</h5>
+
+              <!-- descripción del objetivo -->
+              <p class="card-text text-light">
+                Tu misión es encontrar las flags ocultas dentro del sistema
+                utilizando técnicas de análisis, enumeración y explotación.
+              </p>
+
+              <!-- pistas del CTF -->
+              <h6 class="text-warning mt-3">Pistas:</h6>
+              <ul class="text-light">
+                <li>No todo lo que ves es real</li>
+                <li>Explora cada funcionalidad</li>
+                <li>Observa cómo interactúa el sistema con la base de datos</li>
+              </ul>
+            </div>
+            <!-- footer con categoría -->
+            <div class="card-footer border-secondary">
+              <small class="text-muted"
+                >Capture The Flag — Nivel: Básico/Intermedio</small
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- tarjeta 3: advertencia legal -->
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 bg-dark border-secondary">
+            <div class="card-body">
+              <!-- título de la tarjeta -->
+              <h5 class="card-title text-danger">Advertencia</h5>
+
+              <!-- texto de advertencia -->
+              <p class="card-text text-light">
+                Este entorno contiene vulnerabilidades intencionales. No
+                representa buenas prácticas de desarrollo.
+              </p>
+
+              <!-- aclaración adicional -->
+              <p class="card-text text-light">
+                Las técnicas demostradas aquí deben usarse únicamente en
+                entornos controlados y con autorización explícita.
+              </p>
+            </div>
+            <!-- footer con aviso legal -->
+            <div class="card-footer border-secondary">
+              <small class="text-muted">Solo para uso educativo</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--jQuery-->
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.js"
+      integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+      crossorigin="anonymous"
+    ></script>
+
+    <!--Bottstrap/popper-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+
+    <!--Bottstrap/js-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- js/script.js -->
+    <script src="/static/js/script.js"></script>
+  </body>
+</html>

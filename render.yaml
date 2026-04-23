@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: login-app
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: login-app-db
+          property: connectionString
+
+databases:
+  - name: login-app-db
+    plan: free
+    databaseName: login_app
