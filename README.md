@@ -13,6 +13,7 @@ Segun la documentacion oficial de Render:
 - Flask se despliega con `pip install -r requirements.txt` y un arranque tipo `gunicorn app:app`
 - Render Postgres es la base administrada nativa
 - las variables de entorno deben configurarse en el dashboard o con `render.yaml`
+- en el plan gratis no se puede usar `preDeployCommand`, por eso la app inicializa el esquema PostgreSQL al primer acceso
 
 Fuentes:
 
@@ -56,10 +57,7 @@ python app.py
 
 ### Cargar datos del laboratorio
 
-Render no importa automaticamente el esquema SQL de tu repo. Despues de crear la base:
-
-1. Abre un shell SQL o usa una herramienta cliente compatible con PostgreSQL.
-2. Ejecuta el contenido de `database_postgres.sql`.
+En esta version para Render free, la app intenta crear las tablas e insertar los datos iniciales al primer acceso usando `database_postgres.sql`.
 
 ## Variables de entorno
 
@@ -75,4 +73,3 @@ Si prefieres crear el servicio manualmente en Render en vez de usar Blueprint:
   - `pip install -r requirements.txt`
 - Start Command:
   - `gunicorn app:app`
-

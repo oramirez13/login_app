@@ -34,6 +34,10 @@ DB_CONFIG = {
 }
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+POSTGRES_SCHEMA_FILE = os.path.join(
+    os.path.dirname(__file__), "database_postgres.sql"
+)
+POSTGRES_BOOTSTRAPPED = False
 
 
 # función que crea una conexión fresca por cada petición
@@ -45,6 +49,27 @@ def get_db():
     return mysql.connector.connect(**DB_CONFIG)
 
 
+def ensure_postgres_schema():
+    global POSTGRES_BOOTSTRAPPED
+
+    if POSTGRES_BOOTSTRAPPED or not DATABASE_URL:
+        return
+
+    with open(POSTGRES_SCHEMA_FILE, "r", encoding="utf-8") as sql_file:
+        schema_sql = sql_file.read()
+
+    db = get_db()
+    db.autocommit = True
+    cursor = db.cursor()
+
+    try:
+        cursor.execute(schema_sql)
+        POSTGRES_BOOTSTRAPPED = True
+    finally:
+        cursor.close()
+        db.close()
+
+
 # ============================================
 # RUTAS PRINCIPALES
 # ============================================
@@ -52,6 +77,7 @@ def get_db():
 # ruta principal → carga el login
 @app.route("/")
 def home():
+    ensure_postgres_schema()
     return render_template("index.html")
 
 
