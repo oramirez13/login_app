@@ -3,6 +3,7 @@
 # ============================================
 
 import os
+import secrets
 
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for
 
@@ -18,7 +19,7 @@ import psycopg2
 app = Flask(__name__)
 
 # clave secreta para firmar sesiones (cookies)
-app.secret_key = os.getenv("SECRET_KEY", "orami_ctf_secret")
+app.secret_key = os.getenv("SECRET_KEY") or secrets.token_hex(32)
 
 
 # ============================================
@@ -148,6 +149,8 @@ def buscar():
     if not session.get("logged_in"):
         return redirect(url_for("home"))
 
+    ensure_postgres_schema()
+
     # parámetro recibido por URL (?q=...)
     query_param = request.args.get("q", "")
 
@@ -197,11 +200,15 @@ def buscar():
 def login():
 
     # obtener JSON enviado desde el frontend (AJAX)
-    data = request.get_json()
+    ensure_postgres_schema()
+    data = request.get_json(silent=True) or {}
 
     # extraer credenciales
     username = data.get("username")
     password = data.get("password")
+
+    if not username or not password:
+        return jsonify({"status": "error", "message": "Credenciales incompletas"}), 400
 
     # conexión fresca por petición
     db = get_db()

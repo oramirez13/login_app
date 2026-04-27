@@ -62,7 +62,7 @@ En esta versión para Render free, la app intenta crear las tablas e insertar lo
 ## Variables de entorno
 
 - `DATABASE_URL`: usada en Render para PostgreSQL
-- `SECRET_KEY`: opcional para sobrescribir la clave de sesión
+- `SECRET_KEY`: recomendable en cualquier despliegue persistente; si no se define, la app genera una clave aleatoria al arrancar
 - `TECHNOVA_DB_HOST`, `TECHNOVA_DB_USER`, `TECHNOVA_DB_PASSWORD`, `TECHNOVA_DB_NAME`: no aplican aqui
 
 ## Start command manual

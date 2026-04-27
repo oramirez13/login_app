@@ -28,9 +28,12 @@ if (path.includes("/contacto")) {
 // CUANDO EL DOCUMENTO ESTÉ LISTO
 // ========================================
 $(document).ready(function() {
+    // contador de caracteres en contacto
+    $("#mensaje").on("input", function() {
+        $("#contador").text($(this).val().length);
+    });
 
     $("#loginForm").submit(function(e) {
-
         e.preventDefault();
 
         let username = $("#username").val();
@@ -61,7 +64,5 @@ $(document).ready(function() {
                   .css("color", "red");
             }
         });
-
     });
-
 });
