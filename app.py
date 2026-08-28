@@ -194,8 +194,10 @@ def login():
     # ejecutar query
     cursor.execute(query)
 
-    # obtener un resultado
-    result = cursor.fetchone()
+    # obtener todos los resultados con fetchall() (no fetchone())
+    # motivo: con el ataque ' OR '1'='1' -- la consulta devuelve varias filas
+    # y si quedaran filas sin leer, cursor.close() lanza "Unread result found"
+    result = cursor.fetchall()
 
     # cerrar cursor y conexión
     cursor.close()
