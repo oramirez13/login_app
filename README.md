@@ -95,8 +95,8 @@ The application includes the following main screens when running locally at `htt
 | ------------------------------------------------------ | ----------------------------------------------------- |
 | ![Contact page](screenshots/login_app_05.png?raw=true) | ![Search page](screenshots/login_app_06.png?raw=true) |
 
-| 404 error page | Not found and custom error handling |
-| -------------- | ---------------------------------- |
+| 404 error page                                     | Not found and custom error handling                                                            |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | ![404 page](screenshots/login_app_09.png?raw=true) | This page is shown when a route is missing or the request cannot be resolved by the Flask app. |
 
 The login screen shows the initial authentication form used to test SQLi bypass techniques. The dashboard confirms that the session is active after login. The blog page presents the main vulnerability categories in a card-based layout, while the about page explains the purpose of the lab, its limitations, and its educational scope. The contact form demonstrates a reflected XSS payload rendered unsafely in the browser, the search page shows the UNION-based SQLi challenge used to extract hidden flags from the database, and the 404 page provides a controlled response for missing routes.
