@@ -28,6 +28,8 @@ app.secret_key = os.getenv("SECRET_KEY") or secrets.token_hex(32)
 # configuración de la base de datos
 DB_CONFIG = {
     "host": "localhost",      # servidor de base de datos
+    "port": 3308,             # puerto del MariaDB nativo
+                              # 3306 lo ocupa LAMPP, 3307 el contenedor docker
     "user": "labuser",        # usuario
     "password": "labpass",    # contraseña
     "database": "login_app",  # nombre de la BD

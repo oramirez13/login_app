@@ -114,10 +114,38 @@ pip list
 
 ## 5. Levantar la base de datos
 
-### 5.1 Enciende el servidor MariaDB/MySQL
+### 5.1 Puertos en uso en este equipo
+
+En esta máquina hay varias bases coexistiendo, por eso el MariaDB nativo se
+mueve al puerto **3308**:
+
+| Puerto | Usuario                         | Motor   | Nota                                  |
+|--------|---------------------------------|---------|---------------------------------------|
+| 3306   | LAMPP (Apache + MySQL)          | MySQL   | lo reserva LAMPP cuando está encendido |
+| 3307   | `sabd_mariadb` (contenedor)     | MariaDB | no se toca                            |
+| 3308   | **login_app** (servicio nativo) | MariaDB | la app se conecta aquí                |
+
+### 5.2 Ajusta el puerto del MariaDB nativo a 3308
+
+El archivo `/etc/my.cnf` define el puerto. Si tiene `3307` (choca con el
+contenedor) o `3306` (choca con LAMPP), cámbialo a `3308`:
 
 ```bash
-sudo systemctl start mariadb      # sistem actual (usando systemd)
+sudo sed -i 's/^port=330[67]$/port=3308/' /etc/my.cnf
+```
+
+Verifica que quedó así:
+
+```bash
+cat /etc/my.cnf
+```
+
+Debe mostrar `port=3308` tanto en la sección `[mysqld]` como en `[client]`.
+
+### 5.3 Enciende el servidor MariaDB
+
+```bash
+sudo systemctl start mariadb      # arranca el servicio
 ```
 
 Para que arranque automáticamente al encender el equipo:
@@ -126,13 +154,13 @@ Para que arranque automáticamente al encender el equipo:
 sudo systemctl enable mariadb
 ```
 
-### 5.2 Verifica que esté activo
+### 5.4 Verifica que esté activo
 
 ```bash
 systemctl status mariadb
 ```
 
-Debe mostrarse `active (running)`.
+Debe mostrarse `active (running)` y escuchando en `3308`.
 
 ---
 
@@ -142,6 +170,7 @@ La app se conecta usando estas credenciales (definidas en `DB_CONFIG`
 dentro de `app.py`):
 
 - Host: `localhost`
+- Puerto: `3308`
 - Usuario: `labuser`
 - Contraseña: `labpass`
 - Base de datos: `login_app`
@@ -292,10 +321,12 @@ sudo systemctl stop mariadb
 | Problema | Causa probable | Solución |
 |----------|----------------|----------|
 | `Can't connect to MySQL server` | MariaDB no está corriendo | `sudo systemctl start mariadb` |
+| `Bind on TCP/IP port. Got error: 98` | El puerto configurado (3307) ya lo usa el contenedor `sabd_mariadb` | `sudo sed -i 's/port=3307/port=3308/' /etc/my.cnf` y reinicia el servicio |
 | `Access denied for user 'labuser'` | El usuario no fue creado correctamente | Repite el [paso 6](#6-crear-base-de-datos-y-usuario) |
 | `Unknown database 'login_app'` | La base no fue creada | `CREATE DATABASE login_app;` |
 | `Table 'login_app.users' doesn't exist` | No se cargó `database.sql` | Ejecuta `sudo mariadb < database.sql` |
-| `Address already in use` | El puerto 5000 está ocupado | Cierra el proceso anterior o cambia el puerto en `app.py` |
+| `Connection refused (3308)` | LAMPP o el contenedor cambiaron el puerto | Confirma que `/etc/my.cnf` tenga `port=3308` y que el servicio esté activo |
+| `Address already in use` (puerto 5000) | El servidor Flask anterior sigue abierto | Cierra el proceso o cambia el puerto en `app.py` |
 | `ModuleNotFoundError` | Dependencias no instaladas | `pip install -r requirements.txt` con el venv activo |
 
 ---
@@ -303,16 +334,19 @@ sudo systemctl stop mariadb
 ## 12. Extra: variante con Docker
 
 Si en lugar de MariaDB nativo prefieres levantar la base en un **contenedor Docker**
-(sin tocar el MariaDB del sistema), puedes hacerlo así.
+(sin tocar el MariaDB del sistema), puedes hacerlo así. Detén antes el servicio
+nativo, porque ambos usarían el puerto 3308:
 
 ```bash
-# crear el contenedor con la base y el usuario esperados
+sudo systemctl stop mariadb
+
+# crear el contenedor con la base y el usuario esperados (puerto 3308)
 docker run -d --name login_app_db \
   -e MARIADB_DATABASE=login_app \
   -e MARIADB_USER=labuser \
   -e MARIADB_PASSWORD=labpass \
   -e MARIADB_ROOT_PASSWORD=rootpass \
-  -p 3306:3306 \
+  -p 3308:3306 \
   mariadb:latest
 
 # copiar y ejecutar el esquema dentro del contenedor
