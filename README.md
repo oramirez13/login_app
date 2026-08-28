@@ -79,6 +79,26 @@ python app.py
 
 Abrir en el navegador: `http://localhost:5000`
 
+## Capturas del laboratorio
+
+Vistas principales de la aplicación corriendo en local `(localhost:5000)`.
+
+| Login | Dashboard tras autenticarse |
+|-------|------------------------------|
+| ![Login](screenshots/01_login.png?raw=true) | ![Dashboard](screenshots/02_dashboard.png?raw=true) |
+
+| Blog | Contacto (formulario) |
+|------|------------------------|
+| ![Blog](screenshots/03_blog.png?raw=true) | ![Contacto](screenshots/05_contacto.png?raw=true) |
+
+| SQLi con UNION en `/buscar` (exfiltra las flags) | XSS reflejado en `/contacto` |
+|------|------------------------|
+| ![SQLi UNION](screenshots/04_buscar.png?raw=true) | ![XSS reflejado](screenshots/06_xss_reflejado.png?raw=true) |
+
+La última captura muestra el resultado del payload
+`' UNION SELECT id, flag FROM secret_flags -- ` en el buscador y la del
+contacto un `<script>` reflejado por `|safe`.
+
 ## Credenciales de prueba
 
 | Usuario | Contraseña |
