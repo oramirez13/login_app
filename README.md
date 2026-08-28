@@ -1,75 +1,87 @@
 # login_app
 
 Aplicación Flask de laboratorio orientada a prácticas de ciberseguridad.
+Incluye vulnerabilidades intencionales (SQL Injection y XSS) para poder
+practicar técnicas de ataque y defensa en un entorno controlado.
 
 ## Nota
 
 La app mantiene vulnerabilidades intencionales para fines de laboratorio.
+**No debe desplegarse en producción ni conectarse a datos reales.**
 
-## Render
+## Lo que hace esta app
 
-Según la documentación oficial de Render:
+- Login con `SQL Injection` para evadir la autenticación
+- Página `/buscar` vulnerable a `SQL Injection` (sondeo y exfiltración)
+- Página `/contacto` vulnerable a `XSS`
+- Rutas protegidas por sesión (`/dashboard`, `/blog`, `/acerca`)
+- Usa **MySQL/MariaDB** como única base de datos (configuración en `DB_CONFIG`)
 
-- Flask se despliega con `pip install -r requirements.txt` y un arranque tipo `gunicorn app:app`
-- Render Postgres es la base administrada nativa
-- las variables de entorno deben configurarse en el dashboard o con `render.yaml`
-- en el plan gratis no se puede usar `preDeployCommand`, por eso la app inicializa el esquema PostgreSQL al primer acceso
+## Requisitos
 
-Fuentes:
+- Python 3
+- MySQL o MariaDB corriendo en `localhost`
+- La base de datos y el usuario definidos en `DB_CONFIG`:
+  - Host: `localhost`
+  - Usuario: `labuser`
+  - Contraseña: `labpass`
+  - Base de datos: `login_app`
 
-- https://render.com/docs/deploy-flask
-- https://render.com/docs/databases
-- https://render.com/docs/configure-environment-variables
-- https://render.com/docs/blueprint-spec
-
-## Lo que hace esta versión
-
-- En Render usa PostgreSQL mediante `DATABASE_URL`
-- Localmente puede seguir usando MySQL con las credenciales originales
-- Incluye `render.yaml` para crear el servicio web y la base Postgres
-- Incluye `database_postgres.sql` para cargar el laboratorio en PostgreSQL
-
-## Ejecutar localmente con MySQL
+## Instalación rápida
 
 ```bash
-cd flask/login_app
+# 1. Crear y activar el entorno virtual
 python3 -m venv venv
 source venv/bin/activate
+
+# 2. Instalar dependencias
 pip install -r requirements.txt
+
+# 3. Crear la base de datos y cargar el esquema
+sudo systemctl start mariadb
+sudo mariadb < database.sql
+
+# 4. Ejecutar la app
 python app.py
 ```
 
-## Despliegue en Render
+Abrir en el navegador: `http://localhost:5000`
 
-### Opción recomendada: con Blueprint
+## Credenciales de prueba
 
-1. Sube este proyecto a GitHub.
-2. En Render, elige `New +` -> `Blueprint`.
-3. Selecciona el repositorio.
-4. Render detectará `render.yaml` y te propondrá:
-   - un `Web Service`
-   - una base `Postgres`
-5. Crea los recursos.
-6. Cuando la base esté lista, abre su panel y copia la `Internal Database URL` si la quieres revisar.
-7. En el servicio web, Render usará:
-   - `buildCommand: pip install -r requirements.txt`
-   - `startCommand: gunicorn app:app`
+| Usuario | Contraseña |
+|---------|------------|
+| admin   | 1234       |
+| orami   | hackme     |
 
-### Cargar datos del laboratorio
+## Rutas disponibles
 
-En esta versión para Render free, la app intenta crear las tablas e insertar los datos iniciales al primer acceso usando `database_postgres.sql`.
+| Ruta        | Acceso      | Vulnerabilidad               |
+|-------------|-------------|------------------------------|
+| `/`         | pública     | login (SQLi auth bypass)     |
+| `/login`    | pública     | endpoint del login (SQLi)    |
+| `/buscar`   | sesión      | SQL Injection                |
+| `/contacto` | sesión      | XSS                          |
+| `/dashboard`| sesión      | -                            |
+| `/blog`     | sesión      | -                            |
+| `/acerca`   | sesión      | -                            |
+| `/logout`   | sesión      | cierra la sesión             |
 
-## Variables de entorno
+## Estructura del proyecto
 
-- `DATABASE_URL`: usada en Render para PostgreSQL
-- `SECRET_KEY`: recomendable en cualquier despliegue persistente; si no se define, la app genera una clave aleatoria al arrancar
-- `TECHNOVA_DB_HOST`, `TECHNOVA_DB_USER`, `TECHNOVA_DB_PASSWORD`, `TECHNOVA_DB_NAME`: no aplican aqui
+- `app.py` — aplicación Flask (rutas y lógica del laboratorio)
+- `database.sql` — esquema MySQL con los datos del laboratorio
+- `templates/` — plantillas HTML renderizadas por Flask
+- `static/` — CSS, JavaScript e imágenes
+- `STEP-BY-STEP.md` — guía completa para levantar el servicio desde cero
 
-## Start command manual
+## Guía desde cero
 
-Si prefieres crear el servicio manualmente en Render en vez de usar Blueprint:
+Para montar el servicio completo paso a paso (dependencias, base de datos,
+usuario, arranque y pruebas), consulta [`STEP-BY-STEP.md`](STEP-BY-STEP.md).
 
-- Build Command:
-  - `pip install -r requirements.txt`
-- Start Command:
-  - `gunicorn app:app`
+## Variables de entorno (opcional)
+
+- `SECRET_KEY`: define una clave fija para firmar las sesiones. Si no se
+  define, la app genera una clave aleatoria en cada arranque (las sesiones
+  se invalidan al reiniciar el servidor).

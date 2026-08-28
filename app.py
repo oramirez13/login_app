@@ -8,7 +8,6 @@ import secrets
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for
 
 import mysql.connector
-import psycopg2
 
 
 # ============================================
@@ -23,7 +22,7 @@ app.secret_key = os.getenv("SECRET_KEY") or secrets.token_hex(32)
 
 
 # ============================================
-# CONEXIÓN A LA BASE DE DATOS
+# CONEXIÓN A LA BASE DE DATOS (MySQL/MariaDB)
 # ============================================
 
 # configuración de la base de datos
@@ -34,41 +33,11 @@ DB_CONFIG = {
     "database": "login_app",  # nombre de la BD
 }
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-POSTGRES_SCHEMA_FILE = os.path.join(
-    os.path.dirname(__file__), "database_postgres.sql"
-)
-POSTGRES_BOOTSTRAPPED = False
-
 
 # función que crea una conexión fresca por cada petición
 # evita el error: "Unread result found"
 def get_db():
-    if DATABASE_URL:
-        return psycopg2.connect(DATABASE_URL)
-
     return mysql.connector.connect(**DB_CONFIG)
-
-
-def ensure_postgres_schema():
-    global POSTGRES_BOOTSTRAPPED
-
-    if POSTGRES_BOOTSTRAPPED or not DATABASE_URL:
-        return
-
-    with open(POSTGRES_SCHEMA_FILE, "r", encoding="utf-8") as sql_file:
-        schema_sql = sql_file.read()
-
-    db = get_db()
-    db.autocommit = True
-    cursor = db.cursor()
-
-    try:
-        cursor.execute(schema_sql)
-        POSTGRES_BOOTSTRAPPED = True
-    finally:
-        cursor.close()
-        db.close()
 
 
 # ============================================
@@ -78,7 +47,6 @@ def ensure_postgres_schema():
 # ruta principal → carga el login
 @app.route("/")
 def home():
-    ensure_postgres_schema()
     return render_template("index.html")
 
 
@@ -149,8 +117,6 @@ def buscar():
     if not session.get("logged_in"):
         return redirect(url_for("home"))
 
-    ensure_postgres_schema()
-
     # parámetro recibido por URL (?q=...)
     query_param = request.args.get("q", "")
 
@@ -200,7 +166,6 @@ def buscar():
 def login():
 
     # obtener JSON enviado desde el frontend (AJAX)
-    ensure_postgres_schema()
     data = request.get_json(silent=True) or {}
 
     # extraer credenciales
