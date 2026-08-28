@@ -81,23 +81,21 @@ Open the browser: `http://localhost:5000`
 
 ## Lab screenshots
 
-Main views of the application running locally `(localhost:5000)`.
+The application includes the following main screens when running locally at `http://localhost:5000`.
 
-| Login                                       | Dashboard after logging in                          |
-| ------------------------------------------- | --------------------------------------------------- |
-| ![Login](screenshots/01_login.png?raw=true) | ![Dashboard](screenshots/02_dashboard.png?raw=true) |
+| Login page                                           | Dashboard after authentication                           |
+| ---------------------------------------------------- | -------------------------------------------------------- |
+| ![Login page](screenshots/login_app_01.png?raw=true) | ![Dashboard page](screenshots/login_app_02.png?raw=true) |
 
-| Blog                                      | Contact (form)                                  |
-| ----------------------------------------- | ----------------------------------------------- |
-| ![Blog](screenshots/03_blog.png?raw=true) | ![Contact](screenshots/05_contact.png?raw=true) |
+| Blog page                                                                    | About page                                                                          |
+| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| ![Blog page with vulnerability cards](screenshots/login_app_03.png?raw=true) | ![About page with lab overview and warnings](screenshots/login_app_04.png?raw=true) |
 
-| SQLi with UNION in `/search` (exfiltrates the flags) | Reflected XSS in `/contact`                                 |
-| ---------------------------------------------------- | ----------------------------------------------------------- |
-| ![SQLi UNION](screenshots/04_search.png?raw=true)    | ![Reflected XSS](screenshots/06_xss_reflejado.png?raw=true) |
+| Contact form (reflected XSS challenge)                 | Search page (SQL Injection challenge)                 |
+| ------------------------------------------------------ | ----------------------------------------------------- |
+| ![Contact page](screenshots/login_app_05.png?raw=true) | ![Search page](screenshots/login_app_06.png?raw=true) |
 
-The last screenshot shows the result of the payload
-`' UNION SELECT id, flag FROM secret_flags -- ` in the search box, and the
-contact one shows a `<script>` reflected by `|safe`.
+The login screen shows the initial authentication form used to test SQLi bypass techniques. The dashboard confirms that the session is active after login. The blog page presents the main vulnerability categories in a card-based layout, while the about page explains the purpose of the lab, its limitations, and its educational scope. The contact form demonstrates a reflected XSS payload rendered unsafely in the browser, and the search page shows the UNION-based SQLi challenge used to extract hidden flags from the database.
 
 ## Test credentials
 
