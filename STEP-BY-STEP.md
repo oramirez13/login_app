@@ -1,47 +1,47 @@
-# STEP-BY-STEP: levantar login_app desde cero
+# STEP-BY-STEP: set up login_app from scratch
 
-Guía paso a paso para montar el servicio **localmente** con **MySQL/MariaDB**,
-sin depender de servicios en la nube (Render, Netlify, etc.).
+Step-by-step guide to set up the service **locally** with **MySQL/MariaDB**,
+without depending on cloud services (Render, Netlify, etc.).
 
-Al final de esta guía tendrás la app funcionando en
-`http://localhost:5000` con su base de datos `login_app`.
-
----
-
-## Índice
-
-1. [Requisitos previos](#1-requisitos-previos)
-2. [Obtener el proyecto](#2-obtener-el-proyecto)
-3. [Crear el entorno virtual (venv)](#3-crear-el-entorno-virtual-venv)
-4. [Instalar dependencias](#4-instalar-dependencias)
-5. [Levantar la base de datos](#5-levantar-la-base-de-datos)
-6. [Crear base de datos y usuario](#6-crear-base-de-datos-y-usuario)
-7. [Cargar el esquema del laboratorio](#7-cargar-el-esquema-del-laboratorio)
-8. [Arrancar la aplicación](#8-arrancar-la-aplicación)
-9. [Probar el servicio](#9-probar-el-servicio)
-10. [Detener el servicio](#10-detener-el-servicio)
-11. [Solución de problemas](#11-solución-de-problemas)
-12. [Extra: variante con Docker](#12-extra-variante-con-docker)
+At the end of this guide you will have the app running at
+`http://localhost:5000` with its `login_app` database.
 
 ---
 
-## 1. Requisitos previos
+## Table of contents
 
-Necesitas instalado en tu sistema:
+1. [Prerequisites](#1-prerequisites)
+2. [Get the project](#2-get-the-project)
+3. [Create the virtual environment (venv)](#3-create-the-virtual-environment-venv)
+4. [Install dependencies](#4-install-dependencies)
+5. [Set up the database](#5-set-up-the-database)
+6. [Create database and user](#6-create-database-and-user)
+7. [Load the lab schema](#7-load-the-lab-schema)
+8. [Start the application](#8-start-the-application)
+9. [Test the service](#9-test-the-service)
+10. [Stop the service](#10-stop-the-service)
+11. [Troubleshooting](#11-troubleshooting)
+12. [Extra: Docker variant](#12-extra-docker-variant)
 
-- **Python 3** con `pip` (incluye `venv`)
-- **MySQL** o **MariaDB** (servidor y cliente)
-- **Git** (para clonar el repositorio)
+---
 
-Para comprobar que ya están instalados:
+## 1. Prerequisites
+
+You need installed on your system:
+
+- **Python 3** with `pip` (includes `venv`)
+- **MySQL** or **MariaDB** (server and client)
+- **Git** (to clone the repository)
+
+To check they are already installed:
 
 ```bash
-python3 --version        # versión de Python
-mysql --version          # versión de MySQL/MariaDB
-git --version            # versión de Git
+python3 --version        # Python version
+mysql --version          # MySQL/MariaDB version
+git --version            # Git version
 ```
 
-Si algún comando falla, instala el paquete correspondiente con tu gestor:
+If any command fails, install the corresponding package with your manager:
 
 ```bash
 # Fedora / RHEL
@@ -56,9 +56,9 @@ sudo pacman -S python python-pip mariadb git
 
 ---
 
-## 2. Obtener el proyecto
+## 2. Get the project
 
-Clona el repositorio (o entra en tu copia local si ya la tienes):
+Clone the repository (or enter your local copy if you already have it):
 
 ```bash
 git clone https://github.com/oramirez13/login_app.git
@@ -67,22 +67,22 @@ cd login_app
 
 ---
 
-## 3. Crear el entorno virtual (venv)
+## 3. Create the virtual environment (venv)
 
-El **entorno virtual** aísla las dependencias de Python del resto del sistema,
-para que cada proyecto tenga sus propias versiones de librerías.
+The **virtual environment** isolates the Python dependencies from the rest
+of the system, so each project has its own library versions.
 
 ```bash
-# crear el entorno virtual dentro de la carpeta venv/
+# create the virtual environment inside the venv/ folder
 python3 -m venv venv
 
-# activarlo (cambia el prompt de la terminal)
+# activate it (changes the terminal prompt)
 source venv/bin/activate
 ```
 
-Después de activarlo verás `(venv)` al inicio del prompt.
+After activating it you will see `(venv)` at the start of the prompt.
 
-Para desactivarlo en cualquier momento:
+To deactivate it at any time:
 
 ```bash
 deactivate
@@ -90,21 +90,21 @@ deactivate
 
 ---
 
-## 4. Instalar dependencias
+## 4. Install dependencies
 
-Con el entorno virtual **activo**, instala las librerías del proyecto:
+With the virtual environment **active**, install the project libraries:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Esto instala:
+This installs:
 
-- `Flask` — el framework web
-- `mysql-connector-python` — conector para hablar con MySQL/MariaDB
-- `gunicorn` — servidor WSGI para producción (opcional en desarrollo)
+- `Flask` - the web framework
+- `mysql-connector-python` - connector to talk to MySQL/MariaDB
+- `gunicorn` - WSGI server for production (optional in development)
 
-Para ver qué se instaló:
+To see what was installed:
 
 ```bash
 pip list
@@ -112,112 +112,112 @@ pip list
 
 ---
 
-## 5. Levantar la base de datos
+## 5. Set up the database
 
-### 5.1 Puertos en uso en este equipo
+### 5.1 Ports in use on this machine
 
-En esta máquina hay varias bases coexistiendo, por eso el MariaDB nativo se
-mueve al puerto **3308**:
+Several databases coexist on this machine, which is why the native MariaDB
+moves to port **3308**:
 
-| Puerto | Usuario                         | Motor   | Nota                                  |
-|--------|---------------------------------|---------|---------------------------------------|
-| 3306   | LAMPP (Apache + MySQL)          | MySQL   | lo reserva LAMPP cuando está encendido |
-| 3307   | `sabd_mariadb` (contenedor)     | MariaDB | no se toca                            |
-| 3308   | **login_app** (servicio nativo) | MariaDB | la app se conecta aquí                |
+| Port | Use                            | Engine  | Note                           |
+| ---- | ------------------------------ | ------- | ------------------------------ |
+| 3306 | LAMPP (Apache + MySQL)         | MySQL   | reserved by LAMPP when running |
+| 3307 | `sabd_mariadb` (container)     | MariaDB | do not touch it                |
+| 3308 | **login_app** (native service) | MariaDB | the app connects here          |
 
-### 5.2 Ajusta el puerto del MariaDB nativo a 3308
+### 5.2 Adjust the native MariaDB port to 3308
 
-El archivo `/etc/my.cnf` define el puerto. Si tiene `3307` (choca con el
-contenedor) o `3306` (choca con LAMPP), cámbialo a `3308`:
+The file `/etc/my.cnf` defines the port. If it has `3307` (conflicts with the
+container) or `3306` (conflicts with LAMPP), change it to `3308`:
 
 ```bash
 sudo sed -i 's/^port=330[67]$/port=3308/' /etc/my.cnf
 ```
 
-Verifica que quedó así:
+Verify it ended up like this:
 
 ```bash
 cat /etc/my.cnf
 ```
 
-Debe mostrar `port=3308` tanto en la sección `[mysqld]` como en `[client]`.
+It must show `port=3308` both in the `[mysqld]` section and in `[client]`.
 
-### 5.3 Enciende el servidor MariaDB
+### 5.3 Start the MariaDB server
 
 ```bash
-sudo systemctl start mariadb      # arranca el servicio
+sudo systemctl start mariadb      # starts the service
 ```
 
-Para que arranque automáticamente al encender el equipo:
+To make it start automatically on boot:
 
 ```bash
 sudo systemctl enable mariadb
 ```
 
-### 5.4 Verifica que esté activo
+### 5.4 Verify it is active
 
 ```bash
 systemctl status mariadb
 ```
 
-Debe mostrarse `active (running)` y escuchando en `3308`.
+It must show `active (running)` and listening on `3308`.
 
 ---
 
-## 6. Crear base de datos y usuario
+## 6. Create database and user
 
-La app se conecta usando estas credenciales (definidas en `DB_CONFIG`
-dentro de `app.py`):
+The app connects with these credentials (defined in `DB_CONFIG`
+inside `app.py`):
 
 - Host: `localhost`
-- Puerto: `3308`
-- Usuario: `labuser`
-- Contraseña: `labpass`
-- Base de datos: `login_app`
+- Port: `3308`
+- User: `labuser`
+- Password: `labpass`
+- Database: `login_app`
 
-Crea la base de datos, el usuario y los permisos:
+Create the database, the user and the permissions:
 
 ```bash
 sudo mariadb
 ```
 
-Dentro del cliente SQL ejecuta:
+Inside the SQL client run:
 
 ```sql
--- crear la base de datos
+-- create the database
 CREATE DATABASE login_app;
 
--- crear el usuario de la app
+-- create the app user
 CREATE USER 'labuser'@'localhost' IDENTIFIED BY 'labpass';
 
--- dar permisos a la base de datos login_app
+-- grant permissions on the login_app database
 GRANT ALL PRIVILEGES ON login_app.* TO 'labuser'@'localhost';
 
--- aplicar restricciones de inmediato
+-- apply restrictions immediately
 FLUSH PRIVILEGES;
 
--- salir del cliente SQL
+-- exit the SQL client
 EXIT;
 ```
 
-> Nota: si tu servidor es MySQL (no MariaDB) el comando para entrar es
-> `sudo mysql` y los comandos SQL son los mismos.
+> Note: if your server is MySQL (not MariaDB) the command to enter is
+> `sudo mysql` and the SQL commands are the same.
 
 ---
 
-## 7. Cargar el esquema del laboratorio
+## 7. Load the lab schema
 
-El archivo `database.sql` crea las tablas `users` y `secret_flags` e inserta
-los datos de prueba (credenciales y flags del CTF).
+The file `database.sql` creates the `users` and `secret_flags` tables and
+inserts the test data (credentials and CTF flags).
 
-Sitúate en la carpeta del proyecto y carga el archivo:
+Go to the project folder and load the file:
 
 ```bash
-cd /ruta/a/login_app
+cd /path/to/login_app
 sudo mariadb < database.sql
 ```
 
-Para confirmar que quedó cargado, entra al cliente y revisa las tablas:
+To confirm it was loaded, enter the client and check the tables:
 
 ```bash
 sudo mariadb
@@ -225,30 +225,30 @@ sudo mariadb
 
 ```sql
 USE login_app;
-SHOW TABLES;            -- debe listar: users, secret_flags
-SELECT * FROM users;    -- debe listar: admin y orami
+SHOW TABLES;            -- should list: users, secret_flags
+SELECT * FROM users;    -- should list: admin and orami
 EXIT;
 ```
 
 ---
 
-## 8. Arrancar la aplicación
+## 8. Start the application
 
-Con el entorno virtual **activo** y dentro de la carpeta del proyecto:
+With the virtual environment **active** and inside the project folder:
 
 ```bash
 python app.py
 ```
 
-Deberías ver algo como:
+You should see something like:
 
 ```
  * Running on http://127.0.0.1:5000
 ```
 
-La app queda escuchando en el **puerto 5000** de tu equipo.
+The app stays listening on **port 5000** of your machine.
 
-Abre el navegador:
+Open the browser:
 
 ```
 http://localhost:5000
@@ -256,59 +256,61 @@ http://localhost:5000
 
 ---
 
-## 9. Probar el servicio
+## 9. Test the service
 
-### 9.1 Login normal
+### 9.1 Normal login
 
-Usa las credenciales de prueba:
+Use the test credentials:
 
-| Usuario | Contraseña |
-|---------|------------|
-| admin   | 1234       |
-| orami   | hackme     |
+| Username | Password |
+| -------- | -------- |
+| admin    | 1234     |
+| orami    | hackme   |
 
-Al entrar accedes a `/dashboard` y puedes navegar por `/blog`, `/acerca`,
-`/contacto` y `/buscar`.
+After logging in you access `/dashboard` and can browse `/blog`, `/about`,
+`/contact` and `/search`.
 
-### 9.2 Login con SQL Injection (auth bypass)
+### 9.2 Login with SQL Injection (auth bypass)
 
-En el formulario de login, escribe en **Usuario**:
+In the login form, type in **Username**:
 
 ```sql
 ' OR '1'='1' --
 ```
 
-y cualquier contraseña. El ataque hace que la consulta siempre devuelva un
-resultado y el login se completa sin credenciales válidas.
+and any password. The attack makes the query always return a
+result and the login completes without valid credentials.
 
-### 9.3 Buscar con SQL Injection (exfiltración)
+### 9.3 Search with SQL Injection (exfiltration)
 
-Estando logueado, en `/buscar` prueba el payload clásico:
+While logged in, in `/search` try the classic payload:
 
 ```sql
-' UNION SELECT id, flag FROM secret_flags -- 
+' UNION SELECT id, flag FROM secret_flags --
 ```
 
-Esto une la consulta original con la tabla oculta `secret_flags`, donde están
-las flags del laboratorio.
+This merges the original query with the hidden `secret_flags` table, where
+the lab flags are stored.
 
-### 9.4 Contacto con XSS
+### 9.4 Contact with XSS
 
-Estando logueado, en `/contacto` escribe en el campo mensaje:
+While logged in, in `/contact` type in the message field:
 
 ```html
-<script>alert('XSS');</script>
+<script>
+  alert("XSS");
+</script>
 ```
 
-El script se ejecuta en el navegador porque el mensaje se renderiza con `|safe`.
+The script executes in the browser because the message is rendered with `|safe`.
 
 ---
 
-## 10. Detener el servicio
+## 10. Stop the service
 
-Para **detener la app**: pulsa `Ctrl + C` en la terminal donde se ejecuta.
+To **stop the app**: press `Ctrl + C` in the terminal where it runs.
 
-Para **detener la base de datos**:
+To **stop the database**:
 
 ```bash
 sudo systemctl stop mariadb
@@ -316,31 +318,31 @@ sudo systemctl stop mariadb
 
 ---
 
-## 11. Solución de problemas
+## 11. Troubleshooting
 
-| Problema | Causa probable | Solución |
-|----------|----------------|----------|
-| `Can't connect to MySQL server` | MariaDB no está corriendo | `sudo systemctl start mariadb` |
-| `Bind on TCP/IP port. Got error: 98` | El puerto configurado (3307) ya lo usa el contenedor `sabd_mariadb` | `sudo sed -i 's/port=3307/port=3308/' /etc/my.cnf` y reinicia el servicio |
-| `Access denied for user 'labuser'` | El usuario no fue creado correctamente | Repite el [paso 6](#6-crear-base-de-datos-y-usuario) |
-| `Unknown database 'login_app'` | La base no fue creada | `CREATE DATABASE login_app;` |
-| `Table 'login_app.users' doesn't exist` | No se cargó `database.sql` | Ejecuta `sudo mariadb < database.sql` |
-| `Connection refused (3308)` | LAMPP o el contenedor cambiaron el puerto | Confirma que `/etc/my.cnf` tenga `port=3308` y que el servicio esté activo |
-| `Address already in use` (puerto 5000) | El servidor Flask anterior sigue abierto | Cierra el proceso o cambia el puerto en `app.py` |
-| `ModuleNotFoundError` | Dependencias no instaladas | `pip install -r requirements.txt` con el venv activo |
+| Problem                                 | Likely cause                                                               | Solution                                                                   |
+| --------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `Can't connect to MySQL server`         | MariaDB is not running                                                     | `sudo systemctl start mariadb`                                             |
+| `Bind on TCP/IP port. Got error: 98`    | The configured port (3307) is already used by the `sabd_mariadb` container | `sudo sed -i 's/port=3307/port=3308/' /etc/my.cnf` and restart the service |
+| `Access denied for user 'labuser'`      | The user was not created correctly                                         | Repeat [step 6](#6-create-database-and-user)                               |
+| `Unknown database 'login_app'`          | The database was not created                                               | `CREATE DATABASE login_app;`                                               |
+| `Table 'login_app.users' doesn't exist` | `database.sql` was not loaded                                              | Run `sudo mariadb < database.sql`                                          |
+| `Connection refused (3308)`             | LAMPP or the container changed the port                                    | Confirm `/etc/my.cnf` has `port=3308` and that the service is active       |
+| `Address already in use` (port 5000)    | A previous Flask server is still open                                      | Kill the process or change the port in `app.py`                            |
+| `ModuleNotFoundError`                   | Dependencies not installed                                                 | `pip install -r requirements.txt` with the venv active                     |
 
 ---
 
-## 12. Extra: variante con Docker
+## 12. Extra: Docker variant
 
-Si en lugar de MariaDB nativo prefieres levantar la base en un **contenedor Docker**
-(sin tocar el MariaDB del sistema), puedes hacerlo así. Detén antes el servicio
-nativo, porque ambos usarían el puerto 3308:
+If instead of native MariaDB you prefer to set the database up in a **Docker
+container** (without touching the system MariaDB), you can do it like this.
+Stop the native service first, because both would use port 3308:
 
 ```bash
 sudo systemctl stop mariadb
 
-# crear el contenedor con la base y el usuario esperados (puerto 3308)
+# create the container with the expected database and user (port 3308)
 docker run -d --name login_app_db \
   -e MARIADB_DATABASE=login_app \
   -e MARIADB_USER=labuser \
@@ -349,12 +351,12 @@ docker run -d --name login_app_db \
   -p 3308:3306 \
   mariadb:latest
 
-# copiar y ejecutar el esquema dentro del contenedor
+# copy and run the schema inside the container
 docker cp database.sql login_app_db:/database.sql
 docker exec login_app_db mariadb -u labuser -plabpass login_app < database.sql
 ```
 
-Para detenerla:
+To stop it:
 
 ```bash
 docker stop login_app_db

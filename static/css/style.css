@@ -1,5 +1,5 @@
 /* ============================================
-   ESTILOS GLOBALES
+   GLOBAL STYLES
    ============================================ */
 
 body {
@@ -19,29 +19,29 @@ body {
 
 
 /* ============================================
-   404 — IMÁGENES FUNDIDAS (pantalla completa)
+   404 - BLENDED IMAGES (full screen)
    ============================================ */
 
-/* contenedor que ocupa toda la pantalla */
+/* container that covers the whole screen */
 .img-fusion {
-    position: fixed;   /* fijo en la ventana, no en el documento */
+    position: fixed;   /* fixed in the window, not in the document */
     top: 0;
     left: 0;
-    width: 100vw;      /* 100% del ancho de la ventana */
-    height: 100vh;     /* 100% del alto de la ventana */
+    width: 100vw;      /* 100% of the window width */
+    height: 100vh;     /* 100% of the window height */
     overflow: hidden;
-    z-index: 0;        /* detrás del contenido de texto */
+    z-index: 0;        /* behind the text content */
 }
 
-/* imagen base (NO SIGNAL) — cubre toda la pantalla */
+/* base image (NO SIGNAL) - covers the whole screen */
 .img-fusion .img-base {
     width: 100%;
     height: 100%;
-    object-fit: cover;   /* recorta para cubrir sin deformar */
+    object-fit: cover;   /* crops to cover without distorting */
     display: block;
 }
 
-/* imagen superpuesta (NO NO NO) — fusionada con screen */
+/* overlay image (NO NO NO) - blended with screen */
 .img-fusion .img-overlay {
     position: absolute;
     top: 0;
@@ -49,12 +49,12 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    mix-blend-mode: screen;  /* fusión: combina luces de ambas imágenes */
-    opacity: 0.6;            /* transparencia para suavizar la fusión */
+    mix-blend-mode: screen;  /* blend: combines the lights of both images */
+    opacity: 0.6;            /* transparency to soften the blend */
 }
 
-/* el contenido (texto y botón) encima de las imágenes */
+/* the content (text and button) on top of the images */
 .contenido-404 {
     position: relative;
-    z-index: 1;        /* encima del img-fusion */
+    z-index: 1;        /* above the img-fusion */
 }

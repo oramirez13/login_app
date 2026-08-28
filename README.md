@@ -1,64 +1,64 @@
 # login_app
 
-Aplicación Flask de laboratorio orientada a prácticas de ciberseguridad.
-Incluye vulnerabilidades intencionales (SQL Injection y XSS) para poder
-practicar técnicas de ataque y defensa en un entorno controlado.
+Flask laboratory application for cybersecurity practice.
+It includes intentional vulnerabilities (SQL Injection and XSS) so you can
+practice attack and defense techniques in a controlled environment.
 
-## Nota importante (fines didácticos)
+## Important note (educational purposes only)
 
-Esta aplicación es **exclusivamente un laboratorio de ciberseguridad**.
+This application is **exclusively a cybersecurity laboratory**.
 
-- Contiene **vulnerabilidades intencionales** creadas para estudiar ataques y defensa a nivel educativo.
-- Debe ejecutarse **únicamente en un entorno aislado y controlado** (máquina local o VM).
-- **SOLO con fines didácticos**: prueba los ataques de esta lista sobre *este proyecto*.
-  Atacar sistemas sin autorización es ilegal y el uso fuera de un laboratorio es tu responsabilidad.
-- **No** debe desplegarse en producción, exponerse a Internet ni conectarse a datos reales.
+- It contains **intentional vulnerabilities** created to study attacks and defenses at an educational level.
+- It must be run **only in an isolated and controlled environment** (local machine or VM).
+- **FOR EDUCATIONAL PURPOSES ONLY**: test the attacks in this list on _this project_.
+  Attacking systems without authorization is illegal, and using it outside a lab is your responsibility.
+- It must **not** be deployed to production, exposed to the Internet, or connected to real data.
 
-## Lo que hace esta app
+## What this app does
 
-- Login con `SQL Injection` para evadir la autenticación
-- Página `/buscar` vulnerable a `SQL Injection` (sondeo y exfiltración)
-- Página `/contacto` vulnerable a `XSS`
-- Rutas protegidas por sesión (`/dashboard`, `/blog`, `/acerca`)
-- Usa **MySQL/MariaDB** como única base de datos (configuración en `DB_CONFIG`)
+- Login with `SQL Injection` to bypass authentication
+- `/search` page vulnerable to `SQL Injection` (probing and exfiltration)
+- `/contact` page vulnerable to `XSS`
+- Session-protected routes (`/dashboard`, `/blog`, `/about`)
+- Uses **MySQL/MariaDB** as its only database (configuration in `DB_CONFIG`)
 
-## Puertos de base de datos en este equipo
+## Database ports on this machine
 
-| Puerto | Usuario                     | Motor          |
-|--------|-----------------------------|----------------|
-| 3306   | LAMPP (Apache + MySQL)      | MySQL          |
-| 3307   | `sabd_mariadb` (contenedor) | MariaDB        |
-| 3308   | **login_app** (servicio nativo) | MariaDB    |
+| Port | Use                            | Engine  |
+| ---- | ------------------------------ | ------- |
+| 3306 | LAMPP (Apache + MySQL)         | MySQL   |
+| 3307 | `sabd_mariadb` (container)     | MariaDB |
+| 3308 | **login_app** (native service) | MariaDB |
 
-La app se conecta al **puerto 3308** para no chocar con LAMPP ni con el
-contenedor Docker.
+The app connects to **port 3308** to avoid colliding with LAMPP or the
+Docker container.
 
-## Requisitos
+## Requirements
 
 - Python 3
-- MySQL o MariaDB corriendo en `localhost:3308`
-- La base de datos y el usuario definidos en `DB_CONFIG`:
+- MySQL or MariaDB running on `localhost:3308`
+- The database and user defined in `DB_CONFIG`:
   - Host: `localhost`
-  - Puerto: `3308`
-  - Usuario: `labuser`
-  - Contraseña: `labpass`
-  - Base de datos: `login_app`
+  - Port: `3308`
+  - User: `labuser`
+  - Password: `labpass`
+  - Database: `login_app`
 
-## Instalación rápida
+## Quick install
 
 ```bash
-# 0. Configurar MariaDB nativo en el puerto 3308 (3306 es de LAMPP, 3307 del contenedor)
+# 0. Configure native MariaDB on port 3308 (3306 is LAMPP, 3307 is the container)
 sudo sed -i 's/^port=330[67]$/port=3308/' /etc/my.cnf
 sudo systemctl start mariadb
 
-# 1. Crear y activar el entorno virtual
+# 1. Create and activate the virtual environment
 python3 -m venv venv
 source venv/bin/activate
 
-# 2. Instalar dependencias
+# 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Crear la base de datos, el usuario y cargar el esquema
+# 3. Create the database, the user and load the schema
 sudo mariadb
 ```
 
@@ -73,233 +73,234 @@ EXIT;
 ```bash
 sudo mariadb < database.sql
 
-# 4. Ejecutar la app
+# 4. Run the app
 python app.py
 ```
 
-Abrir en el navegador: `http://localhost:5000`
+Open the browser: `http://localhost:5000`
 
-## Capturas del laboratorio
+## Lab screenshots
 
-Vistas principales de la aplicación corriendo en local `(localhost:5000)`.
+Main views of the application running locally `(localhost:5000)`.
 
-| Login | Dashboard tras autenticarse |
-|-------|------------------------------|
+| Login                                       | Dashboard after logging in                          |
+| ------------------------------------------- | --------------------------------------------------- |
 | ![Login](screenshots/01_login.png?raw=true) | ![Dashboard](screenshots/02_dashboard.png?raw=true) |
 
-| Blog | Contacto (formulario) |
-|------|------------------------|
-| ![Blog](screenshots/03_blog.png?raw=true) | ![Contacto](screenshots/05_contacto.png?raw=true) |
+| Blog                                      | Contact (form)                                  |
+| ----------------------------------------- | ----------------------------------------------- |
+| ![Blog](screenshots/03_blog.png?raw=true) | ![Contact](screenshots/05_contact.png?raw=true) |
 
-| SQLi con UNION en `/buscar` (exfiltra las flags) | XSS reflejado en `/contacto` |
-|------|------------------------|
-| ![SQLi UNION](screenshots/04_buscar.png?raw=true) | ![XSS reflejado](screenshots/06_xss_reflejado.png?raw=true) |
+| SQLi with UNION in `/search` (exfiltrates the flags) | Reflected XSS in `/contact`                                 |
+| ---------------------------------------------------- | ----------------------------------------------------------- |
+| ![SQLi UNION](screenshots/04_search.png?raw=true)    | ![Reflected XSS](screenshots/06_xss_reflejado.png?raw=true) |
 
-La última captura muestra el resultado del payload
-`' UNION SELECT id, flag FROM secret_flags -- ` en el buscador y la del
-contacto un `<script>` reflejado por `|safe`.
+The last screenshot shows the result of the payload
+`' UNION SELECT id, flag FROM secret_flags -- ` in the search box, and the
+contact one shows a `<script>` reflected by `|safe`.
 
-## Credenciales de prueba
+## Test credentials
 
-| Usuario | Contraseña |
-|---------|------------|
-| admin   | 1234       |
-| orami   | hackme     |
+| Username | Password |
+| -------- | -------- |
+| admin    | 1234     |
+| orami    | hackme   |
 
-## Rutas disponibles
+## Available routes
 
-| Ruta        | Acceso      | Vulnerabilidad               |
-|-------------|-------------|------------------------------|
-| `/`         | pública     | login (SQLi auth bypass)     |
-| `/login`    | pública     | endpoint del login (SQLi)    |
-| `/buscar`   | sesión      | SQL Injection                |
-| `/contacto` | sesión      | XSS                          |
-| `/dashboard`| sesión      | -                            |
-| `/blog`     | sesión      | -                            |
-| `/acerca`   | sesión      | -                            |
-| `/logout`   | sesión      | cierra la sesión             |
+| Route        | Access  | Vulnerability            |
+| ------------ | ------- | ------------------------ |
+| `/`          | public  | login (SQLi auth bypass) |
+| `/login`     | public  | login endpoint (SQLi)    |
+| `/search`    | session | SQL Injection            |
+| `/contact`   | session | XSS                      |
+| `/dashboard` | session | -                        |
+| `/blog`      | session | -                        |
+| `/about`     | session | -                        |
+| `/logout`    | session | closes the session       |
 
-## Ataques del laboratorio (solo fines didácticos)
+## Lab attacks (educational purposes only)
 
-Cada ataque lista: dónde ocurre, cómo funciona, un payload de ejemplo y cómo
-se mitiga en un escenario real. Todo se estudia sobre esta app, **en un
-entorno controlado**.
+Each attack lists: where it happens, how it works, an example payload and how
+it is mitigated in a real scenario. Everything is studied on this app, **in a
+controlled environment**.
 
 ---
 
-### 1. SQL Injection — Bypass de autenticación en el login
+### 1. SQL Injection - Authentication bypass in the login
 
-- **Dónde:** `/login`, campo *Usuario* (`app.py:186`).
-- **Cómo funciona:** la consulta se construye concatenando el input del usuario
-  sin parametrizar:
+- **Where:** `/login`, _Username_ field (`app.py:186`).
+- **How it works:** the query is built by concatenating the user input
+  without parameterization:
   ```sql
   SELECT * FROM users WHERE username = '...' AND password = '...'
   ```
-  Al inyectar una condición siempre verdadera, la consulta devuelve filas aunque
-  las credenciales sean falsas.
+  By injecting an always-true condition, the query returns rows even though
+  the credentials are false.
 - **Payload:**
   ```
   ' OR '1'='1' --
   ```
-  El `'` cierra la cadena, `OR '1'='1'` vuelve verdadera la condición y `--`
-  comenta el resto de la consulta (el `AND password`).
-- **Impacto:** acceso a `/dashboard` sin credenciales válidas.
-- **Mitigación:** usar consultas parametrizadas (ya existe la versión segura
-  comentada en `app.py:188`), por ejemplo `cursor.execute(query, (username, password))`.
+  The `'` closes the string, `OR '1'='1'` makes the condition true and `--`
+  comments out the rest of the query (the `AND password` part).
+- **Impact:** access to `/dashboard` without valid credentials.
+- **Mitigation:** use parameterized queries (the secure version already exists
+  commented out in `app.py:189`), e.g. `cursor.execute(query, (username, password))`.
 
 ---
 
-### 2. SQL Injection — Exfiltración de datos con UNION (tabla oculta)
+### 2. SQL Injection - Data exfiltration with UNION (hidden table)
 
-- **Dónde:** `/buscar`, parámetro `q` (`app.py:135`).
-- **Cómo funciona:** la sentencia `UNION SELECT` permite fusionar la consulta
-  original con otra de creación propia, accediendo a tablas que la app no
-  muestra (aquí, `secret_flags`).
+- **Where:** `/search`, parameter `q` (`app.py:137`).
+- **How it works:** the `UNION SELECT` statement merges the original query
+  with a custom one, accessing tables the app does not show (here, `secret_flags`).
 - **Payload:**
   ```
-  ' UNION SELECT id, flag FROM secret_flags -- 
+  ' UNION SELECT id, flag FROM secret_flags --
   ```
-- **Impacto:** vuelca las 4 flags del laboratorio en la página de resultados.
-- **Mitigación:** parametrización de la consulta; además, el usuario de BD
-  (`labuser`) solo debería tener `SELECT` sobre las tablas necesarias y nunca
-  `CREATE`, `DROP` ni acceso a esquemas completos.
+- **Impact:** dumps the 4 lab flags in the results page.
+- **Mitigation:** parameterize the query; additionally, the DB user
+  (`labuser`) should only have `SELECT` on the needed tables and never
+  `CREATE`, `DROP` or access to full schemas.
 
 ---
 
-### 3. SQL Injection — Error-based (enumeración de información)
+### 3. SQL Injection - Error-based (information enumeration)
 
-- **Dónde:** `/buscar`, parámetro `q` (`app.py:149-151`).
-- **Cómo funciona:** cualquier excepción SQL se imprime en pantalla
-  (`error = str(e)`), revelando detalle del motor de base de datos, nombres de
-  columnas y estructura interna. Sirve para sondeo:
+- **Where:** `/search`, parameter `q` (`app.py:153`).
+- **How it works:** any SQL exception is printed on screen
+  (`error = str(e)`), revealing database engine details, column names and
+  internal structure. Useful for probing:
 - **Payload:**
   ```
   '
   ```
-  (una comilla simple rompe la consulta y el error queda visible).
-- **Impacto:** información entregada por el servidor (information disclosure),
-  que facilita construir inyecciones más precisas enumerando `information_schema`.
-- **Mitigación:** no mostrar errores SQL al usuario; registrarlos en un log
-  interno y responder con un mensaje genérico.
+  (a single quote breaks the query and the error becomes visible).
+- **Impact:** information disclosure from the server, which makes it easier
+  to build more precise injections by enumerating `information_schema`.
+- **Mitigation:** do not show SQL errors to the user; log them internally
+  and respond with a generic message.
 
 ---
 
-### 4. Reflected XSS — Ejecución de scripts en el navegador
+### 4. Reflected XSS - Script execution in the browser
 
-- **Dónde:** `/contacto`, campo *Mensaje* (`contacto.html:105`).
-- **Cómo funciona:** Jinja2 escapa las variables por defecto, pero aquí se
-  aplica `{{ mensaje|safe }}`, que desactiva el escape y el dato llega al HTML
-  como código interpretable.
+- **Where:** `/contact`, _Message_ field (`contact.html:108`).
+- **How it works:** Jinja2 escapes variables by default, but here
+  `{{ message|safe }}` is used, which disables escaping and the data reaches
+  the HTML as interpretable code.
 - **Payload:**
   ```html
-  <script>alert('XSS')</script>
+  <script>
+    alert("XSS");
+  </script>
   ```
-  o variantes sin `<script>`:
+  or variants without `<script>`:
   ```html
   <img src=x onerror=alert('XSS')>
   ```
-- **Impacto:** ejecución de JavaScript en la sesión de la víctima: robo de
-  cookies de sesión, keylogging, redirección a sitios maliciosos. Es *reflected*
-  (el mensaje no se guarda en la base de datos).
-- **Mitigación:** quitar `|safe` (Jinja2 ya escapa el valor por sí solo) o
-  aplicar filtros de saneamiento y Content Security Policy (CSP).
+- **Impact:** JavaScript execution in the victim's session: session cookie
+  theft, keylogging, redirection to malicious sites. It is _reflected_
+  (the message is not stored in the database).
+- **Mitigation:** remove `|safe` (Jinja2 already escapes the value by
+  itself) or apply sanitization filters and a Content Security Policy (CSP).
 
 ---
 
-### 5. Information disclosure + modo debug (potencial RCE)
+### 5. Information disclosure + debug mode (potential RCE)
 
-- **Dónde:** `app.py:248` (`app.run(debug=True)`).
-- **Cómo funciona:** con debug activo, Flask muestra el depurador interactivo de
-  Werkzeug. Ante un error expone rutas del sistema y una consola ejecutable que,
-  si el atacante obtiene el PIN del depurador, permite ejecutar código en el
-  servidor (**Remote Code Execution**).
-- **Payload:** provocar un error (por ejemplo, una consulta inválida) y usar la
-  consola `/__debugger__`.
-- **Impacto:** fuga de paths internos; en el peor caso, control total del servidor.
-- **Mitigación:** `debug=False` en producción y usar `gunicorn app:app` en lugar
-  de `python app.py`; páginas de error propias.
-
----
-
-### 6. Credenciales débiles y contraseñas en texto plano
-
-- **Dónde:** `database.sql` (datos del laboratorio).
-- **Cómo funciona:** las contraseñas se guardan sin hash (`admin`/`1234`,
-  `orami`/`hackme`). Si la base se filtra, las contraseñas se leen directo;
-  además son triviales de adivinar.
-- **Impacto:** acceso directo con las credenciales por defecto.
-- **Mitigación:** almacenar hashes con bcrypt/argon2 y exigir contraseñas fuertes
-  (en este lab es intencional para facilitar el ejercicio).
+- **Where:** `app.py:252` (`app.run(debug=True)`).
+- **How it works:** with debug active, Flask shows the interactive Werkzeug
+  debugger. On an error it exposes system paths and an executable console
+  which, if the attacker obtains the debugger PIN, allows code execution on
+  the server (**Remote Code Execution**).
+- **Payload:** trigger an error (e.g. an invalid query) and use the
+  `/__debugger__` console.
+- **Impact:** internal path leakage; in the worst case, full server control.
+- **Mitigation:** `debug=False` in production and use `gunicorn app:app`
+  instead of `python app.py`; custom error pages.
 
 ---
 
-### 7. Fuerza bruta — sin límite de intentos en el login
+### 6. Weak credentials and passwords in plain text
 
-- **Dónde:** `/login` (no hay rate limiting).
-- **Cómo funciona:** el endpoint acepta intentos ilimitados sin bloqueo ni
-  espera, por lo que se pueden probar miles de contraseñas por segundo.
-- **Impacto:** con credenciales tan débiles como `admin`/`1234`, el acceso se
-  obtiene incluso sin SQLi, solo probando combinaciones.
-- **Mitigación:** limitación de tasa (número de intentos por IP/usuario),
-  bloqueo temporal, delay progresivo y CAPTCHA.
-
----
-
-### 8. CSRF — Envío de formularios sin autorización
-
-- **Dónde:** `/contacto` (POST sin token CSRF).
-- **Cómo funciona:** un sitio ajeno puede cargar una página con un formulario
-  oculto que `POST` a `/contacto`; si la víctima está logueada, el navegador
-  envía la cookie de sesión y el servidor procesa la petición como legítima.
-- **Impacto:** en este laboratorio es bajo (el formulario no modifica datos),
-  pero ilustra el vector que en apps reales permite cambiar contraseña, transferir
-  dinero, etc.
-- **Mitigación:** token CSRF (generado por sesión) validado en cada POST, o
-  validar `Origin`/`Referer`.
+- **Where:** `database.sql` (lab data).
+- **How it works:** passwords are stored without hashing (`admin`/`1234`,
+  `orami`/`hackme`). If the database leaks, passwords are read directly;
+  besides, they are trivial to guess.
+- **Impact:** direct access with the default credentials.
+- **Mitigation:** store hashes with bcrypt/argon2 and require strong
+  passwords (intentional in this lab to make the exercise easier).
 
 ---
 
-### 9. Control de acceso insuficiente (sin roles)
+### 7. Brute force - no login attempt limit
 
-- **Dónde:** rutas protegidas (`/dashboard`, `/blog`, `/acerca`).
-- **Cómo funciona:** la única comprobación es `session.get("logged_in")`; todo
-  usuario autenticado accede a todas las secciones, sin jerarquía de roles.
-- **Impacto:** cualquier cuenta (incluso la obtenida por bypass del punto 1)
-  tiene la misma visibilidad; no existe separación de privilegios.
-- **Mitigación:** roles por sesión (usuario/admin) y verificación de permisos
-  por ruta.
-
----
-
-### 10. Señuelos y flags client-side (retos del CTF)
-
-- **Dónde:** `templates/index.html:73` y `static/js/script.js`.
-- **Cómo funciona:** no son vulnerabilidades, sino retos propios del CTF:
-  - una *fake flag* oculta en el HTML: `FLAG{not_the_flag_you_are_looking_for}`
-    (señuelo para despistar);
-  - flags visibles en la consola del navegador (`F12`) según la ruta visitada
-    (`FLAG{blog_console}`, `FLAG{acerca_console}`, `FLAG{contacto_console}`).
-- **Impacto:** ejercitan el reconocimiento con herramientas de desarrollador y
-  el análisis de código del lado del cliente.
-- **Mitigación:** nada que corregir; forman parte del diseño del laboratorio.
+- **Where:** `/login` (no rate limiting).
+- **How it works:** the endpoint accepts unlimited attempts without blocking
+  or delay, so thousands of passwords can be tried per second.
+- **Impact:** with credentials as weak as `admin`/`1234`, access is obtained
+  even without SQLi, just by trying combinations.
+- **Mitigation:** rate limiting (attempts per IP/user), temporary lockout,
+  progressive delay and CAPTCHA.
 
 ---
 
-## Estructura del proyecto
+### 8. CSRF - Submitting forms without authorization
 
-- `app.py` — aplicación Flask (rutas y lógica del laboratorio)
-- `database.sql` — esquema MySQL con los datos del laboratorio
-- `templates/` — plantillas HTML renderizadas por Flask
-- `static/` — CSS, JavaScript e imágenes
-- `STEP-BY-STEP.md` — guía completa para levantar el servicio desde cero
+- **Where:** `/contact` (POST without CSRF token).
+- **How it works:** a third-party site can load a page with a hidden form
+  that `POST`s to `/contact`; if the victim is logged in, the browser sends
+  the session cookie and the server processes the request as legitimate.
+- **Impact:** low in this lab (the form does not modify data), but it
+  illustrates the vector that in real apps allows changing passwords,
+  transferring money, etc.
+- **Mitigation:** CSRF token (generated per session) validated on every
+  POST, or validate `Origin`/`Referer`.
 
-## Guía desde cero
+---
 
-Para montar el servicio completo paso a paso (dependencias, base de datos,
-usuario, arranque y pruebas), consulta [`STEP-BY-STEP.md`](STEP-BY-STEP.md).
+### 9. Insufficient access control (no roles)
 
-## Variables de entorno (opcional)
+- **Where:** protected routes (`/dashboard`, `/blog`, `/about`).
+- **How it works:** the only check is `session.get("logged_in")`; every
+  authenticated user accesses all sections, without a role hierarchy.
+- **Impact:** any account (even one obtained by the point 1 bypass) has the
+  same visibility; there is no privilege separation.
+- **Mitigation:** roles per session (user/admin) and permission checks per
+  route.
 
-- `SECRET_KEY`: define una clave fija para firmar las sesiones. Si no se
-  define, la app genera una clave aleatoria en cada arranque (las sesiones
-  se invalidan al reiniciar el servidor).
+---
+
+### 10. Decoys and client-side flags (CTF challenges)
+
+- **Where:** `templates/index.html:72` and `static/js/script.js`.
+- **How it works:** these are not vulnerabilities, but CTF-specific challenges:
+  - a _fake flag_ hidden in the HTML: `FLAG{not_the_flag_you_are_looking_for}`
+    (decoy to mislead);
+  - flags visible in the browser console (`F12`) depending on the route
+    visited (`FLAG{blog_console}`, `FLAG{about_console}`, `FLAG{contact_console}`).
+- **Impact:** they practice reconnaissance with developer tools and
+  client-side code analysis.
+- **Mitigation:** nothing to fix; they are part of the lab design.
+
+---
+
+## Project structure
+
+- `app.py` - Flask application (routes and lab logic)
+- `database.sql` - MySQL schema with the lab data
+- `templates/` - HTML templates rendered by Flask
+- `static/` - CSS, JavaScript and images
+- `STEP-BY-STEP.md` - complete guide to set up the service from scratch
+
+## From-scratch guide
+
+To set up the whole service step by step (dependencies, database, user,
+startup and tests), see [`STEP-BY-STEP.md`](STEP-BY-STEP.md).
+
+## Environment variables (optional)
+
+- `SECRET_KEY`: defines a fixed key to sign sessions. If not defined, the
+  app generates a random key on every start (sessions are invalidated when
+  the server restarts).

@@ -13,10 +13,18 @@
     <link rel="stylesheet" href="static/css/style.css" />
   </head>
   <body>
-    <!-- navbar principal -->
+    <!-- main navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
-        <a class="navbar-brand" href="index.html">ORAMI</a>
+        <!-- brand text with the icon on the LEFT -->
+        <a class="navbar-brand" href="index.html">
+          <img
+            src="static/img/infosec_orami_.png"
+            alt="Logo"
+            style="height: 30px"
+          />
+          ORAMI
+        </a>
         <button
           class="navbar-toggler"
           type="button"
@@ -30,49 +38,44 @@
         </button>
         <div class="collapse navbar-collapse" id="menuPrincipal">
           <div class="navbar-nav mr-auto">
-            <a class="nav-item nav-link" href="index.html">Inicio</a>
+            <a class="nav-item nav-link" href="index.html">Home</a>
             <a class="nav-item nav-link" href="blog.html">Blog</a>
-            <a class="nav-item nav-link" href="acerca.html">Acerca de</a>
-            <a class="nav-item nav-link" href="contacto.html">Contacto</a>
-            <a class="nav-item nav-link active" href="buscar.html">Buscar</a>
+            <a class="nav-item nav-link" href="about.html">About</a>
+            <a class="nav-item nav-link active" href="contact.html">Contact</a>
+            <a class="nav-item nav-link" href="search.html">Search</a>
           </div>
-          <img
-            src="static/img/infosec_orami_.png"
-            alt="Logo"
-            style="height: 40px"
-            class="d-none d-lg-block mr-3"
-          />
+
+          <!-- logout button -->
           <a href="index.html" class="btn btn-outline-danger btn-sm">Logout</a>
         </div>
       </div>
     </nav>
 
-    <!-- contenedor principal -->
-    <div class="container mt-5">
-      <h1 class="text-center">Buscar usuario</h1>
-      <p class="text-center">
-        Introduce un nombre de usuario para buscarlo en el sistema
-      </p>
+    <!-- main container -->
+    <div class="container mt-5 text-center">
+      <h1>Contact</h1>
+      <p>Communication channels</p>
+      <h2>Write to us</h2>
 
-      <!-- formulario solo visual -->
-      <div class="mx-auto mt-4" style="max-width: 500px">
-        <div class="input-group">
-          <input
-            type="text"
-            id="buscarInput"
-            class="form-control"
-            placeholder="Nombre de usuario..."
-          />
-          <div class="input-group-append">
-            <button class="btn btn-primary" id="btnBuscar">Buscar</button>
-          </div>
+      <!-- visual-only form -->
+      <form id="contactForm">
+        <div class="form-group">
+          <label>Name:</label>
+          <input type="text" id="name" class="form-control" required />
         </div>
-      </div>
 
-      <!-- aviso demo -->
+        <div class="form-group">
+          <label>Message:</label>
+          <textarea id="message" class="form-control" rows="3"></textarea>
+          <p>Total characters: <span id="counter">0</span></p>
+        </div>
+        <button type="submit" class="btn btn-primary">Send</button>
+      </form>
+
+      <!-- demo notice -->
       <div class="alert alert-warning mt-4">
-        <strong>Demo visual:</strong> La búsqueda no está conectada a una base
-        de datos en esta versión estática.
+        <strong>Visual demo:</strong> The form is not connected to a server in
+        this static version.
       </div>
     </div>
 

@@ -4,33 +4,33 @@
 
 
 // ========================================
-// FLAGS SEGÚN LA RUTA (CTF)
+// FLAGS BY ROUTE (CTF)
 // ========================================
 
-// obtener la ruta actual
+// get the current path
 const path = window.location.pathname;
 
-// compatibilidad con entorno local (archivos .html)
+// compatibility with local environment (static .html files)
 if (path.includes("/blog")) {
     console.log("FLAG{blog_console}");
 }
 
-if (path.includes("/acerca")) {
-    console.log("FLAG{acerca_console}");
+if (path.includes("/about")) {
+    console.log("FLAG{about_console}");
 }
 
-if (path.includes("/contacto")) {
-    console.log("FLAG{contacto_console}");
+if (path.includes("/contact")) {
+    console.log("FLAG{contact_console}");
 }
 
 
 // ========================================
-// CUANDO EL DOCUMENTO ESTÉ LISTO
+// WHEN THE DOCUMENT IS READY
 // ========================================
 $(document).ready(function() {
-    // contador de caracteres en contacto
-    $("#mensaje").on("input", function() {
-        $("#contador").text($(this).val().length);
+    // character counter in the contact form
+    $("#message").on("input", function() {
+        $("#counter").text($(this).val().length);
     });
 
     $("#loginForm").submit(function(e) {
@@ -50,7 +50,7 @@ $(document).ready(function() {
 
             success: function(response) {
                 $("#msg")
-                  .text("Acceso concedido 😈")
+                  .text("Access granted 😈")
                   .css("color", "lightgreen");
 
                 setTimeout(function() {
@@ -60,7 +60,7 @@ $(document).ready(function() {
 
             error: function() {
                 $("#msg")
-                  .text("Credenciales incorrectas 💀")
+                  .text("Wrong credentials 💀")
                   .css("color", "red");
             }
         });

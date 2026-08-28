@@ -1,5 +1,5 @@
 # ============================================
-# IMPORTACIONES
+# IMPORTS
 # ============================================
 
 import os
@@ -11,152 +11,150 @@ import mysql.connector
 
 
 # ============================================
-# CONFIGURACIÓN DE LA APLICACIÓN
+# APPLICATION SETUP
 # ============================================
 
-# crear instancia de Flask
+# create the Flask instance
 app = Flask(__name__)
 
-# clave secreta para firmar sesiones (cookies)
+# secret key used to sign sessions (cookies)
 app.secret_key = os.getenv("SECRET_KEY") or secrets.token_hex(32)
 
 
 # ============================================
-# CONEXIÓN A LA BASE DE DATOS (MySQL/MariaDB)
+# DATABASE CONNECTION (MySQL/MariaDB)
 # ============================================
 
-# configuración de la base de datos
+# database configuration
 DB_CONFIG = {
-    "host": "localhost",      # servidor de base de datos
-    "port": 3308,             # puerto del MariaDB nativo
-                              # 3306 lo ocupa LAMPP, 3307 el contenedor docker
-    "user": "labuser",        # usuario
-    "password": "labpass",    # contraseña
-    "database": "login_app",  # nombre de la BD
+    "host": "localhost",  # database server
+    "port": 3308,  # native MariaDB port
+    # 3306 is used by LAMPP, 3307 by the docker container
+    "user": "labuser",  # user
+    "password": "labpass",  # password
+    "database": "login_app",  # database name
 }
 
 
-# función que crea una conexión fresca por cada petición
-# evita el error: "Unread result found"
+# function that creates a fresh connection per request
+# avoids the error: "Unread result found"
 def get_db():
     return mysql.connector.connect(**DB_CONFIG)
 
 
 # ============================================
-# RUTAS PRINCIPALES
+# MAIN ROUTES
 # ============================================
 
-# ruta principal → carga el login
+
+# main route -> loads the login page
 @app.route("/")
 def home():
     return render_template("index.html")
 
 
 # ============================================
-# RUTAS PROTEGIDAS (requieren sesión)
+# PROTECTED ROUTES (require session)
 # ============================================
+
 
 @app.route("/blog")
 def blog():
-    # verificar si el usuario está logueado
+    # check if the user is logged in
     if not session.get("logged_in"):
         return redirect(url_for("home"))
 
     return render_template("blog.html")
 
 
-@app.route("/acerca")
-def acerca():
+@app.route("/about")
+def about():
     if not session.get("logged_in"):
         return redirect(url_for("home"))
 
-    return render_template("acerca.html")
+    return render_template("about.html")
 
 
 # ============================================
-# CONTACTO (XSS VULNERABLE)
+# CONTACT (VULNERABLE XSS)
 # ============================================
 
-@app.route("/contacto", methods=["GET", "POST"])
-def contacto():
-    # verificar sesión
+
+@app.route("/contact", methods=["GET", "POST"])
+def contact():
+    # check session
     if not session.get("logged_in"):
         return redirect(url_for("home"))
 
-    # variables que se enviarán al HTML
-    nombre = ""
-    motivo = ""
-    mensaje = ""
+    # variables that will be sent to the HTML
+    name = ""
+    reason = ""
+    message = ""
 
-    # si el usuario envía el formulario
+    # if the user submits the form
     if request.method == "POST":
 
-        # obtener datos del formulario
-        nombre = request.form.get("nombre")
-        motivo = request.form.get("motivo")
-        mensaje = request.form.get("mensaje")
+        # get data from the form
+        name = request.form.get("name")
+        reason = request.form.get("reason")
+        message = request.form.get("message")
 
-        # VULNERABILIDAD XSS:
-        # el mensaje se envía directamente al template
-        # y en el HTML se usa |safe → ejecuta JS
+        # XSS VULNERABILITY:
+        # the message is sent directly to the template
+        # and in the HTML it uses |safe -> executes JS
         return render_template(
-            "contacto.html",
-            nombre=nombre,
-            motivo=motivo,
-            mensaje=mensaje
+            "contact.html", name=name, reason=reason, message=message
         )
 
-    # si es GET solo carga la página
-    return render_template("contacto.html")
+    # if it is a GET request just load the page
+    return render_template("contact.html")
 
 
 # ============================================
-# BUSCADOR (SQL INJECTION)
+# SEARCH (SQL INJECTION)
 # ============================================
 
-@app.route("/buscar")
-def buscar():
+
+@app.route("/search")
+def search():
     if not session.get("logged_in"):
         return redirect(url_for("home"))
 
-    # parámetro recibido por URL (?q=...)
+    # parameter received from the URL (?q=...)
     query_param = request.args.get("q", "")
 
-    resultados = []
+    results = []
     error = None
 
-    # si hay input del usuario
+    # if there is user input
     if query_param:
         try:
-            # conexión fresca por petición
+            # fresh connection per request
             db = get_db()
             cursor = db.cursor()
 
-            # VULNERABILIDAD SQLi:
-            # concatenación directa del input del usuario
+            # SQLi VULNERABILITY:
+            # direct concatenation of the user input
             query = f"SELECT id, username FROM users WHERE username = '{query_param}'"
 
             print(query)  # debug
 
-            # ejecutar query
+            # run the query
             cursor.execute(query)
 
-            # obtener resultados
-            resultados = cursor.fetchall()
+            # get the results
+            results = cursor.fetchall()
 
-            # cerrar cursor y conexión
+            # close cursor and connection
             cursor.close()
             db.close()
 
         except Exception as e:
-            # muestra errores SQL (information disclosure)
+            # shows SQL errors (information disclosure)
             error = str(e)
 
     return render_template(
-        "buscar.html",
-        resultados=resultados,
-        error=error,
-        q=query_param
+        "search.html", resultados=results, error=error, q=query_param
     )
 
 
@@ -164,56 +162,60 @@ def buscar():
 # LOGIN (SQL INJECTION - AUTH BYPASS)
 # ============================================
 
+
 @app.route("/login", methods=["POST"])
 def login():
 
-    # obtener JSON enviado desde el frontend (AJAX)
+    # get the JSON sent from the frontend (AJAX)
     data = request.get_json(silent=True) or {}
 
-    # extraer credenciales
+    # extract credentials
     username = data.get("username")
     password = data.get("password")
 
     if not username or not password:
-        return jsonify({"status": "error", "message": "Credenciales incompletas"}), 400
+        return jsonify({"status": "error", "message": "Incomplete credentials"}), 400
 
-    # conexión fresca por petición
+    # fresh connection per request
     db = get_db()
     cursor = db.cursor()
 
-    # VULNERABILIDAD SQLi:
-    # permite bypass con ' OR '1'='1' --
-    query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
+    # SQLi VULNERABILITY:
+    # allows bypass with ' OR '1'='1' --
+    query = (
+        f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
+    )
 
-    # versión segura (comentada)
+    # secure version (commented out)
     # query = "SELECT * FROM users WHERE username = %s AND password = %s"
     # cursor.execute(query, (username, password))
 
     print(query)
 
-    # ejecutar query
+    # run the query
     cursor.execute(query)
 
-    # obtener todos los resultados con fetchall() (no fetchone())
-    # motivo: con el ataque ' OR '1'='1' -- la consulta devuelve varias filas
-    # y si quedaran filas sin leer, cursor.close() lanza "Unread result found"
+    # get all results with fetchall() (not fetchone())
+    # reason: with the ' OR '1'='1' -- attack the query returns several rows
+    # and if unread rows were left behind, cursor.close() raises "Unread result found"
     result = cursor.fetchall()
 
-    # cerrar cursor y conexión
+    # close cursor and connection
     cursor.close()
     db.close()
 
-    # si existe usuario válido
+    # if a valid user exists
     if result:
-        session["logged_in"] = True  # crear sesión
+        session["logged_in"] = True  # create session
         return jsonify({"status": "ok"})
     else:
         return jsonify({"status": "error"}), 401
 
 
 # ============================================
-# DASHBOARD (PROTEGIDO)
+# DASHBOARD (PROTECTED)
 # ============================================
+
 
 @app.route("/dashboard")
 def dashboard():
@@ -227,9 +229,10 @@ def dashboard():
 # LOGOUT
 # ============================================
 
+
 @app.route("/logout")
 def logout():
-    # eliminar toda la sesión
+    # clear the whole session
     session.clear()
 
     return redirect(url_for("home"))
@@ -239,13 +242,14 @@ def logout():
 # ERROR 404
 # ============================================
 
+
 @app.errorhandler(404)
-def pagina_no_encontrada(e):
+def page_not_found(e):
     return render_template("404.html"), 404
 
 
 # ============================================
-# EJECUCIÓN DEL SERVIDOR
+# SERVER START
 # ============================================
 
 if __name__ == "__main__":

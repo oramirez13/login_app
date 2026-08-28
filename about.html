@@ -13,10 +13,18 @@
     <link rel="stylesheet" href="static/css/style.css" />
   </head>
   <body>
-    <!-- navbar principal -->
+    <!-- main navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
-        <a class="navbar-brand" href="index.html">ORAMI</a>
+        <!-- brand text with the icon on the LEFT -->
+        <a class="navbar-brand" href="index.html">
+          <img
+            src="static/img/infosec_orami_.png"
+            alt="Logo"
+            style="height: 30px"
+          />
+          ORAMI
+        </a>
         <button
           class="navbar-toggler"
           type="button"
@@ -30,87 +38,82 @@
         </button>
         <div class="collapse navbar-collapse" id="menuPrincipal">
           <div class="navbar-nav mr-auto">
-            <a class="nav-item nav-link" href="index.html">Inicio</a>
+            <a class="nav-item nav-link" href="index.html">Home</a>
             <a class="nav-item nav-link" href="blog.html">Blog</a>
-            <a class="nav-item nav-link active" href="acerca.html">Acerca de</a>
-            <a class="nav-item nav-link" href="contacto.html">Contacto</a>
-            <a class="nav-item nav-link" href="buscar.html">Buscar</a>
+            <a class="nav-item nav-link active" href="about.html">About</a>
+            <a class="nav-item nav-link" href="contact.html">Contact</a>
+            <a class="nav-item nav-link" href="search.html">Search</a>
           </div>
-          <img
-            src="static/img/infosec_orami_.png"
-            alt="Logo"
-            style="height: 40px"
-            class="d-none d-lg-block mr-3"
-          />
+
+          <!-- logout button -->
           <a href="index.html" class="btn btn-outline-danger btn-sm">Logout</a>
         </div>
       </div>
     </nav>
 
-    <!-- contenedor principal -->
+    <!-- main container -->
     <div class="container mt-5">
-      <h1 class="text-center">Acerca de</h1>
-      <p class="text-center">Laboratorio de prácticas de ciberseguridad</p>
+      <h1 class="text-center">About</h1>
+      <p class="text-center">Cybersecurity practice lab</p>
 
-      <!-- fila de tarjetas -->
+      <!-- row of cards -->
       <div class="row mt-4">
-        <!-- tarjeta 1: El Laboratorio -->
+        <!-- card 1: The Lab -->
         <div class="col-md-4 mb-4">
           <div class="card h-100 bg-dark border-secondary">
             <div class="card-body">
-              <h5 class="card-title text-info">Laboratorio</h5>
+              <h5 class="card-title text-info">The Lab</h5>
               <p class="card-text text-light">
-                Este laboratorio ha sido diseñado para poner a prueba tus
-                habilidades en ciberseguridad ofensiva, específicamente en el
-                área de aplicaciones web.
+                This lab has been designed to put your offensive cybersecurity
+                skills to the test, specifically in the web application area.
               </p>
             </div>
             <div class="card-footer border-secondary">
-              <small class="text-muted">InfoSec ORAMI — Web Security Lab</small>
+              <small class="text-muted">InfoSec ORAMI - Web Security Lab</small>
             </div>
           </div>
         </div>
 
-        <!-- tarjeta 2: Objetivo -->
+        <!-- card 2: Objective -->
         <div class="col-md-4 mb-4">
           <div class="card h-100 bg-dark border-secondary">
             <div class="card-body">
-              <h5 class="card-title text-success">Objetivo</h5>
+              <h5 class="card-title text-success">Objective</h5>
               <p class="card-text text-light">
-                Tu misión es encontrar las flags ocultas dentro del sistema
-                utilizando técnicas de análisis, enumeración y explotación.
+                Your mission is to find the hidden flags inside the system using
+                analysis, enumeration and exploitation techniques.
               </p>
-              <h6 class="text-warning mt-3">Pistas:</h6>
+              <h6 class="text-warning mt-3">Hints:</h6>
               <ul class="text-light">
-                <li>No todo lo que ves es real</li>
-                <li>Explora cada funcionalidad</li>
-                <li>Observa cómo interactúa el sistema con la base de datos</li>
+                <li>Not everything you see is real</li>
+                <li>Explore every feature</li>
+                <li>Watch how the system interacts with the database</li>
               </ul>
             </div>
             <div class="card-footer border-secondary">
               <small class="text-muted"
-                >Capture The Flag — Nivel: Básico/Intermedio</small
+                >Capture The Flag - Level: Basic/Intermediate</small
               >
             </div>
           </div>
         </div>
 
-        <!-- tarjeta 3: Advertencia -->
+        <!-- card 3: Warning -->
         <div class="col-md-4 mb-4">
           <div class="card h-100 bg-dark border-secondary">
             <div class="card-body">
-              <h5 class="card-title text-danger">Advertencia</h5>
+              <h5 class="card-title text-danger">Warning</h5>
               <p class="card-text text-light">
-                Este entorno contiene vulnerabilidades intencionales. No
-                representa buenas prácticas de desarrollo.
+                This environment contains intentional vulnerabilities. It does
+                not represent good development practices.
               </p>
               <p class="card-text text-light">
-                Las técnicas demostradas aquí deben usarse únicamente en
-                entornos controlados y con autorización explícita.
+                The techniques shown here must only be used in controlled
+                environments and with explicit authorization.
               </p>
             </div>
             <div class="card-footer border-secondary">
-              <small class="text-muted">Solo para uso educativo</small>
+              <small class="text-muted">For educational use only</small>
             </div>
           </div>
         </div>
